@@ -1,0 +1,30 @@
+{
+  "name": "scrapeThis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kiyocarl/scrapeThis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kiyocarl/scrapeThis/issues"
+  },
+  "homepage": "https://github.com/Kiyocarl/scrapeThis#readme",
+  "dependencies": {
+    "addons": "^0.1.2",
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.0",
+    "heroku": "^7.19.3",
+    "mongoose": "^5.3.15",
+    "morgan": "^1.9.1"
+  }
+}
