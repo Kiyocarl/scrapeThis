@@ -1,17 +1,16 @@
-/* Note Taker (18.2.6)
- * front-end
- * ==================== */
+
 
 // Loads results onto the page
 function getResults() {
   // Empty any results currently on the page
-  $("#results").empty();
+  $("#articles").empty();
   // Grab all of the current notes
-  $.getJSON("/all", function(data) {
+  $.getJSON("/list-item", function(data) {
     // For each note...
+    console.log(data);
     for (var i = 0; i < data.length; i++) {
       // ...populate #results with a p-tag that includes the note's title and object id
-      $("#results").prepend("<p class='data-entry' data-id=" + data[i]._id + "><span class='dataTitle' data-id=" +
+      $("#articles").prepend("<p class='data-entry' data-id=" + data[i]._id + "><span class='dataTitle' data-id=" +
         data[i]._id + ">" + data[i].title + "</span><span class=delete>X</span></p>");
     }
   });

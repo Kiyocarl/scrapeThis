@@ -28,10 +28,10 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true });
-//var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+//mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
-//mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI);
 // Routes
 
 // A GET route for scraping the echoJS website
@@ -42,20 +42,20 @@ app.get("/scrape", function(req, res) {
     var $ = cheerio.load(response.data);
 
     // Now, we grab every List-item within an article tag, and do the following:
-    $("list-item").each(function(i, element) {
+    $(".list-item").each(function(i, element) {
       // Save an empty result object
       var result = {};
 
       // Add the text and href of every link, and save them as properties of the result object
       result.title = $(this)
-        .children("h3")
+        .find("h3")
         .text();
       result.link = $(this)
-        .children("a")
+        .find("a")
         .attr("href");
 
       // Create a new list-item using the `result` object built from scraping
-      db.ListItem.create(result)
+      db.Article.create(result)
         .then(function(dbListItem) {
           // View the added result in the console
           console.log(dbListItem);
@@ -75,7 +75,7 @@ app.get("/scrape", function(req, res) {
 app.get("/list-item", function(req, res) {
   // TODO: Finish the route so it grabs all of the list-item
   db
-  .List
+  .Article
   .find({})
   .then(listInfo => res.json(listInfo))
   .catch(err =>{
@@ -92,7 +92,7 @@ app.get("/list-item/:id", function(req, res) {
   // Finish the route so it finds one list-item using the req.params.id,
   // and run the populate method with "note",
   // then responds with the list-item with the note included
-  db.List
+  db.Article
   .findById(req.params.id)
    .populate("note")
    .then(listInfo => res.json(listInfo))
@@ -112,7 +112,7 @@ app.post("/list-item/:id", function(req, res) {
   .create(req.body)
   .then(dbNoteInfo =>{
     return db
-            .List
+            .Article
             .findByIdAndUpdate(req.params.id, {
               $set:{
                 note: dbNoteInfo._id
