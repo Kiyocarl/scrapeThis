@@ -16,7 +16,6 @@ var PORT = 3000;
 // Initialize Express
 var app = express();
 
-
 // Configure middleware
 
 // Use morgan logger for logging requests
@@ -29,7 +28,8 @@ app.use(express.static("public"));
 
 // Connect to the Mongo DB
 //mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true });
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+var MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 mongoose.connect(MONGODB_URI);
 // Routes
@@ -74,60 +74,74 @@ app.get("/scrape", function(req, res) {
 // Route for getting all list-item from the db
 app.get("/list-item", function(req, res) {
   // TODO: Finish the route so it grabs all of the list-item
-  db
-  .Article
-  .find({})
-  .then(listInfo => res.json(listInfo))
-  .catch(err =>{
-    console.log(err);
-    res.json(err);
-  })
+  db.Article.find({})
+    .then(ListItem => res.json(ListItem))
+    .catch(err => {
+      console.log(err);
+      res.json(err);
+    });
 });
 
 // Route for grabbing a specific List-item by id, populate it with it's note
 app.get("/list-item/:id", function(req, res) {
   // TODO
   // ====
-  
+
   // Finish the route so it finds one list-item using the req.params.id,
   // and run the populate method with "note",
   // then responds with the list-item with the note included
-  db.Article
-  .findById(req.params.id)
-   .populate("note")
-   .then(listInfo => res.json(listInfo))
-   .catch(err => {
-     console.log(err);
-     res.json(err);
-   });
+  db.Article.findById(req.params.id)
+    .populate("note")
+    .then(ListItem => res.json(ListItem))
+    .catch(err => {
+      console.log(err);
+      res.json(err);
+    });
 });
 
 // Route for saving/updating an list-item associated Note
 app.post("/list-item/:id", function(req, res) {
   // TODO
   // ====
-  
-  db
-  .Note
-  .create(req.body)
-  .then(dbNoteInfo =>{
-    return db
-            .Article
-            .findByIdAndUpdate(req.params.id, {
-              $set:{
-                note: dbNoteInfo._id
-              }
-            }, {new: true})
-  })
-  .then(dblistInfo => res.json(dblistInfo))
-  .catch(err => {
-    console.log(err);
-    res.json(err);
-  })
+
+  db.Note.create(req.body)
+    .then(dbNoteInfo => {
+      return db.Article.findByIdAndUpdate(
+        req.params.id,
+        {
+          $push: {
+            note: dbNoteInfo._id
+          }
+        },
+        { new: true }
+      );
+    })
+    .then(dbListItem => res.json(dbListItem))
+    .catch(err => {
+      console.log(err);
+      res.json(err);
+    });
+});
+app.post("/savenote", function(req, res) {
+  // TODO
+  // ====
+
+  db.Note.create(req.body)
+    .then(dbListItem => res.json(dbListItem))
+    .catch(err => {
+      console.log(err);
+      res.json(err);
+    });
 
   // save the new note that gets posted to the Notes collection
   // then find an article from the req.params.id
   // and update it's "note" property with the _id of the new note
+  // db.Note.find({})
+  // .populate("notes")
+  // .then(dbNoteInfo => res.json(dbNoteInfo))
+  // .catch(err => {
+  //   console.log(err);
+  // })
 });
 
 // Start the server
